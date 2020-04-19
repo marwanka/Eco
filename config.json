@@ -1,0 +1,27 @@
+{
+  "mongodb": {
+    "uri": ""
+  },
+  "redis": {
+    "uri": ""
+  },
+  "influx": {
+    "uri": "http://127.0.0.1:8086/eco"
+  },
+  "neo4j": {
+
+  },
+  "weather": {
+    "appID": "MsuMK7Z9Jq0usisGjSe4",
+    "appCode": "4tEpKu_AS4Vz5hQvW7lJRQ",
+    "units": "metric",
+    "locale": "ru"
+  },
+  "cities": [
+    "Moscow, Russia",
+    "Saint Petersburg, Russia",
+    "Novgorod, Russia",
+    "Volgograd, Russia",
+    "Ekaterinburg, Russia"
+  ]
+}
