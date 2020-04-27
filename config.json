@@ -1,15 +1,15 @@
 {
   "mongodb": {
-    "uri": ""
+    "uri": "mongodb://localhost/eco"
   },
   "redis": {
-    "uri": ""
+    "uri": "redis://localhost"
   },
   "influx": {
-    "uri": "http://127.0.0.1:8086/eco"
+    "uri": "http://3.12.198.126:8086/eco"
   },
   "neo4j": {
-
+    "uri": ""
   },
   "weather": {
     "appID": "MsuMK7Z9Jq0usisGjSe4",

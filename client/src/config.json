@@ -1,3 +1,4 @@
 {
-  "api_ip": "http://3.12.198.126"
+  "api_ip": "http://localhost",
+  "1api_ip": "http://3.12.198.126"
 }

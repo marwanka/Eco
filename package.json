@@ -10,8 +10,20 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "connect-redis": "^4.0.4",
+    "cookie-parser": "^1.4.5",
+    "ejs": "^3.1.2",
     "express": "^4.17.1",
+    "express-flash": "0.0.2",
+    "express-flash-messages": "^0.1.1",
+    "express-session": "^1.17.1",
     "influxdb-nodejs": "^3.1.0",
+    "js-sha512": "^0.8.0",
+    "mongoose": "^5.9.10",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "passport-local-register": "^1.0.4",
+    "redis": "^3.0.2",
     "socket.io": "^2.3.0",
     "weather": "^1.0.4"
   }
