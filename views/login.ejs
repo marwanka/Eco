@@ -1,0 +1,35 @@
+<DOCTYPE html!>
+<html>
+  <head>
+    <title>Login</title>
+    <link rel="stylesheet" href="css/auth.css">
+  </head>
+  <body>
+    <div class="wrapper fadeInDown">
+      <div id="formContent">
+        <!-- Tabs Titles -->
+        <h2 class="active"> Sign In </h2>
+        <a href="/signup" class="inactive underlineHover">Sign Up </a>
+
+        <!-- Icon -->
+        <div class="fadeIn first">
+          <% if(message) { %>
+            <span><%=message%></span>
+          <% } %>
+        </div>
+
+        <!-- Login Form -->
+        <form method="POST" action="/login">
+          <input type="text" id="username" class="fadeIn second" name="username" placeholder="login">
+          <input type="text" id="password" class="fadeIn third" name="password" placeholder="password">
+          <input type="submit" class="fadeIn fourth" value="Log In">
+        </form>
+
+        <!-- Remind Passowrd -->
+        <div id="formFooter">
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
