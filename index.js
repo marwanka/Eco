@@ -146,6 +146,10 @@ app.post('/signup', passport.authenticate('signup', {
   failureFlash : true
 }));
 
+app.post('/cities', (req, res) => {
+  res.send(JSON.stringify(config.cities));
+});
+
 app.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/');
@@ -173,17 +177,25 @@ const socketio = require('socket.io')(http);
 
 socketio.on('connection', (socket) => {
   socket.on('get', (filter) => {
-    influx.query('eco_dat')
-    .set({
+    let reader = influx.query('eco_dat');
+    reader.set({
       format: 'json',
       limit: filter.limit || 10,
       offset: filter.offset || 10
     })
-    .then((data)=>{
-        socket.emit('data', data.eco_dat || []);
+    if(filter.city) {
+      reader.where('city', filter.city || "");
+    }
+    reader.then((data)=>{
+      socket.emit('data', data.eco_dat || []);
     })
     .catch(console.error);
   });
+
+  socket.on('cities', () => {
+    socket.emit('cities', config.cities || []);
+  })
+
 });
 
 const Weather = require('weather');

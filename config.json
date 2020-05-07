@@ -18,10 +18,10 @@
     "locale": "ru"
   },
   "cities": [
-    "Moscow, Russia",
-    "Saint Petersburg, Russia",
-    "Novgorod, Russia",
-    "Volgograd, Russia",
-    "Ekaterinburg, Russia"
+    "Moscow",
+    "Saint-Petersburg",
+    "Veliky Novgorod",
+    "Volgograd",
+    "Yekaterinburg"
   ]
 }
