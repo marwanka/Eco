@@ -2,6 +2,8 @@ const config = require('./config.json');
 const fs = require('fs');
 const sha512 = require('js-sha512');
 
+
+//Neo4j database
 const neo4j = require('neo4j-driver');
 const neo_driver = neo4j.driver(config.neo4j.uri)
 
@@ -163,7 +165,7 @@ const isAuthenticated = (req, res, next) => {
   res.redirect('/login');
 };
 
-app.get('/', isAuthenticated, (req, res) => {
+app.get('/*', isAuthenticated, (req, res) => {
   console.log(req.user);
   if(!req.user) { res.redirect('/login'); }
   res.sendFile(__dirname + '/public/client.html');
@@ -179,40 +181,44 @@ const socketio = require('socket.io')(http);
 
 const getCities = (country) => {
     return new Promise((resolve, reject) => {
-      const session = neo_driver.session()
-      session.run('MATCH (c:City)-[]->(ct:Country {country: $country})\n return c;', { country: country })
-      .than(resolve)
+      const session = neo_driver.session();
+      session
+      .run('MATCH (c:City)-[]->(ct:Country {country: $country})\n return c;', { country: country })
+      .then(resolve)
       .catch(reject)
-      .finally(() => session.close())
+      .then(() => session.close())
     });
 }
 const getCountries = () => {
   return new Promise((resolve, reject) => {
-    const session = neo_driver.session()
-    session.run('MATCH (c:Country)\n return c;')
-    .than(resolve)
+    const session = neo_driver.session();
+    session
+    .run('MATCH (c:Country)\n return c;')
+    .then(resolve)
     .catch(reject)
-    .finally(() => session.close())
+    .then(() => session.close())
   });
 }
 
 const addCountry = (country) => {
   if(!country) return;
-  const session = neo_driver.session()
-  session.run('MERGE (n:Country {country: $country});', { country: country })
-  .than(console.log)
+  const session = neo_driver.session();
+  session
+  .run('MERGE (n:Country {country: $country});', { country: country })
+  .then(console.log)
   .catch(console.error)
-  .finally(() => session.close())
+  .then(() => session.close())
 }
 
 const addCity = (country, city) => {
   if(!country || !city) return;
   const session = neo_driver.session();
-  session.run('MERGE (n:City {city: $city});', { city: city })
-  .than(console.log)
+  session
+  .run('MERGE (n:City {city: $city});', { city: city })
+  .then(console.log)
   .catch(console.error)
-  .finally(
-    session.run('', )
+  .then(() =>{
+    session.close();}
   )
 }
 
