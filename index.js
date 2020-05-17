@@ -2,6 +2,8 @@ const config = require('./config.json');
 const fs = require('fs');
 const sha512 = require('js-sha512');
 
+const neo4j = require('neo4j-driver');
+const neo_driver = neo4j.driver(config.neo4j.uri)
 
 //Influx database
 const Influx = require('influxdb-nodejs');
@@ -175,13 +177,52 @@ app.get('/', isAuthenticated, (req, res) => {
 const http = require('http').createServer(app);
 const socketio = require('socket.io')(http);
 
+const getCities = (country) => {
+    return new Promise((resolve, reject) => {
+      const session = neo_driver.session()
+      session.run('MATCH (c:City)-[]->(ct:Country {country: $country})\n return c;', { country: country })
+      .than(resolve)
+      .catch(reject)
+      .finally(() => session.close())
+    });
+}
+const getCountries = () => {
+  return new Promise((resolve, reject) => {
+    const session = neo_driver.session()
+    session.run('MATCH (c:Country)\n return c;')
+    .than(resolve)
+    .catch(reject)
+    .finally(() => session.close())
+  });
+}
+
+const addCountry = (country) => {
+  if(!country) return;
+  const session = neo_driver.session()
+  session.run('MERGE (n:Country {country: $country});', { country: country })
+  .than(console.log)
+  .catch(console.error)
+  .finally(() => session.close())
+}
+
+const addCity = (country, city) => {
+  if(!country || !city) return;
+  const session = neo_driver.session();
+  session.run('MERGE (n:City {city: $city});', { city: city })
+  .than(console.log)
+  .catch(console.error)
+  .finally(
+    session.run('', )
+  )
+}
+
 socketio.on('connection', (socket) => {
   socket.on('get', (filter) => {
     let reader = influx.query('eco_dat');
     reader.set({
       format: 'json',
       limit: filter.limit || 10,
-      offset: filter.offset || 10
+      offset: filter.offset || 0
     })
     if(filter.city) {
       reader.where('city', filter.city || "");
@@ -192,8 +233,23 @@ socketio.on('connection', (socket) => {
     .catch(console.error);
   });
 
-  socket.on('cities', () => {
-    socket.emit('cities', config.cities || []);
+  socket.on('add_country', (data)=>{addCountry(data.country)})
+  socket.on('add_city', (data)=>{addCity(data.country, data.city)})
+
+  socket.on('cities', (data) => {
+    getCities(data.country)
+    .then((d)=>{
+      console.log(d);
+      socket.emit('cities', getCities(d));
+    })
+    .catch(console.error)
+  })
+  socket.on('countries', () => {
+    getCountries()
+    .then((data)=>{
+      socket.emit('countries', data);
+    })
+    .catch(console.error);
   })
 
 });
@@ -216,7 +272,7 @@ const collectData = () => {
     .then((data) => {
       influx.write('eco_dat')
       .field({
-        city: data.city,
+        city: item,
         temperature: data.temperature,
         pressure: data.pressure,
         humidity: data.humidity
@@ -230,7 +286,6 @@ const collectData = () => {
 
 setInterval(()=> {
   collectData();
-  collectWeatherCycle();
 }, 1800000)
 
 http.listen(80, ()=>{

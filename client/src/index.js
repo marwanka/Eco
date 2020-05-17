@@ -4,11 +4,14 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/scss/bootstrap.scss';
+import { Route, BrowserRouter } from 'react-router-dom'
+import AdminPanel from './admin';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <BrowserRouter>
+    <Route path="/admin" component={AdminPanel} />
+    <Route exact path="/" component={App} />
+  </BrowserRouter>,
   document.getElementById('root')
 );
 

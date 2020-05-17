@@ -9,31 +9,47 @@ export default class App extends React.Component {
   constructor() {
     super();
 
-    this.state = { records: [], toggle: false, city: "Moscow", cities: [] };
+    this.state = { records: [], toggle: false, toggleC: false, city: "Город", cities: [], countries: [], country: "Страна" };
     this.toggleDropdown = this.toggleDropdown.bind(this);
+    this.toggleDropdownC = this.toggleDropdownC.bind(this);
     this.setCity = this.setCity.bind(this);
+    this.setContry = this.setCountry.bind(this);
 
-    socket.emit('get', { offset: 0, limit: 10, city: this.state.city });
-    socket.emit('cities');
+
+    socket.emit('countries');
     setInterval(()=>{
       socket.emit('get', { offset: 0, limit: 10, city: this.state.city });
     }, 300000)
 
     socket.on('data', (data) => { this.setState({ records: data }); });
     socket.on('cities', (data) => { this.setState({ cities: data }); });
+    socket.on('countries', (data) => { this.setState({ countries: data }); });
   }
 
   toggleDropdown() { this.setState({toggle: !this.state.toggle}); }
-  setCity(city) { socket.emit('get', { offset: 0, limit: 10, city: city }); this.setState({city: city}); }
+  toggleDropdownC() { this.setState({toggleC: !this.state.toggleC}); }
+  setCity(city) { socket.emit('get', { offset: 0, limit: 10, city: this.state.city }); this.setState({city: city}); }
+  setCountry(country) { socket.emit('cities', { country: this.state.country }); this.setState({country: country}); }
 
   render() {
     return (
       <div>
+        <Dropdown isOpen={this.state.toggleC} toggle={this.toggleDropdownC}>
+        <DropdownToggle caret>
+          {this.state.country}
+          </DropdownToggle>
+        <DropdownMenu right>
+          <DropdownItem header>Страны</DropdownItem>
+          {this.state.countries.map((country, i) => {
+            return (<DropdownItem onClick={()=>{this.setCountry(country);}}>{country}</DropdownItem>);
+          })}
+        </DropdownMenu>
+      </Dropdown>
         <Dropdown isOpen={this.state.toggle} toggle={this.toggleDropdown}>
         <DropdownToggle caret>
           {this.state.city}
           </DropdownToggle>
-        <DropdownMenu>
+        <DropdownMenu right>
           <DropdownItem header>Города</DropdownItem>
           {this.state.cities.map((city, i) => {
             return (<DropdownItem onClick={()=>{this.setCity(city);}}>{city}</DropdownItem>);

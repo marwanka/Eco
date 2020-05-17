@@ -6,22 +6,15 @@
     "uri": "redis://localhost"
   },
   "influx": {
-    "uri": "http://3.12.198.126:8086/eco"
+    "uri": "http://localhost/eco"
   },
   "neo4j": {
-    "uri": ""
+    "uri": "neo4j://localhost"
   },
   "weather": {
     "appID": "MsuMK7Z9Jq0usisGjSe4",
     "appCode": "4tEpKu_AS4Vz5hQvW7lJRQ",
     "units": "metric",
     "locale": "ru"
-  },
-  "cities": [
-    "Moscow",
-    "Saint-Petersburg",
-    "Veliky Novgorod",
-    "Volgograd",
-    "Yekaterinburg"
-  ]
+  }
 }
