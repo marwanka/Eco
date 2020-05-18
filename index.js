@@ -180,7 +180,28 @@ const http = require('http').createServer(app);
 const socketio = require('socket.io')(http);
 
 const getCities = (country) => {
+  return new Promise(async (resolve, reject) => {
+    const sess = ndb.session();
+    try {
+      const result = await sess.run('MATCH (c:City)-[n:REL]->(ct:Country {country: $country}) RETURN c;', { country: country });
+      let res = [];
+      console.log(result.records);
+      for(var i = 0; i < result.records.length; i++) {
+        res.push(result.records[i].get(0).properties.city);
+      }
+      console.log(res);
+      resolve(res);
+    }
+    catch(err) { reject(err) }
+    finally {
+      sess.close();
+    }
+  });
+
     return new Promise(async (resolve, reject) => {
+
+
+
       const sess = ndb.session();
       try {
         const recs = await sess.run('MATCH (c:City)-[n:REL]->(ct:Country {country: $country}) RETURN c;', { country: country }).records;
@@ -230,10 +251,9 @@ const addCountry = async (country) => {
 
 const addCity = (country, city) => {
   if(!country || !city) return;
-  if(!country) return;
   const sess = ndb.session();
   try {
-    sess.run('MERGE (c:City {city: $city}); MERGE (ct:Country {country: $country}); CREATE (c)-[n:REL]->(ct); RETURN n, c;', { country: country, city: city });
+    await sess.run('CREATE (c:City {city: $city})-[n:REL]->(ct:Country {country: $country}); RETURN n, c;', { country: country, city: city });
   }
   catch(err) { console.error(err) }
   finally {
