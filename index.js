@@ -183,7 +183,7 @@ const getCities = (country) => {
   return new Promise(async (resolve, reject) => {
     const sess = ndb.session();
     try {
-      const result = await sess.run('MATCH (c:City)-[n:REL]->(ct:Country { country: $country }) RETURN c;', { country: country });
+      const result = await sess.run('MATCH (:Country { country: $country })<--(c:City)) RETURN c;', { country: country });
       let res = [];
       console.log(result.records);
       for(var i = 0; i < result.records.length; i++) {
@@ -265,8 +265,7 @@ socketio.on('connection', (socket) => {
   socket.on('cities', (data) => {
     getCities(data.country)
     .then((d)=>{
-      console.log(d);
-      socket.emit('cities', getCities(d));
+      socket.emit('cities', d);
     })
     .catch(console.error)
   })
