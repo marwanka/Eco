@@ -28,7 +28,7 @@ export default class App extends React.Component {
 
   toggleDropdown() { this.setState({toggle: !this.state.toggle}); }
   toggleDropdownC() { this.setState({toggleC: !this.state.toggleC}); }
-  setCity(city) { socket.emit('get', { offset: 0, limit: 10, city: this.state.city }); this.setState({city: city}); }
+  setCity(city) { socket.emit('get', { offset: 0, limit: 10, city: city }); this.setState({city: city}); }
   setCountry(country) { socket.emit('cities', { country: this.state.country }); this.setState({country: country}); }
 
   render() {

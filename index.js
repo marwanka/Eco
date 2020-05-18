@@ -293,21 +293,29 @@ const getWeather = (coords) => {
 };
 
 const collectData = () => {
-  config.cities.forEach((item, i) => {
-    getWeather(item)
-    .then((data) => {
-      influx.write('eco_dat')
-      .field({
-        city: item,
-        temperature: data.temperature,
-        pressure: data.pressure,
-        humidity: data.humidity
+  getCountries()
+  .then((countries) => {
+    countries.map((item, i, arr) => {
+      getCities(item)
+      .then((cities) => {
+        getWeather(item)
+        .then((data) => {
+          influx.write('eco_dat')
+          .field({
+            city: item,
+            temperature: data.temperature,
+            pressure: data.pressure,
+            humidity: data.humidity
+          })
+          .then(() => console.log('Write point ' + data.city + ' success'))
+          .catch(console.error);
+        })
+        .catch(console.error);
       })
-      .then(() => console.log('Write point ' + data.city + ' success'))
-      .catch(console.error);
+      .catch(console.error)
     })
-    .catch(console.error);
-  });
+  })
+  .catch(console.error)
 };
 
 setInterval(()=> {
