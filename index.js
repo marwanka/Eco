@@ -197,25 +197,6 @@ const getCities = (country) => {
       sess.close();
     }
   });
-
-    return new Promise(async (resolve, reject) => {
-
-
-
-      const sess = ndb.session();
-      try {
-        const recs = await sess.run('MATCH (c:City)-[n:REL]->(ct:Country {country: $country}) RETURN c;', { country: country }).records;
-        let res = [];
-        for(var i = 0; i < recs.length; i++) {
-          res.push(recs[i].get(0));
-        }
-        return res;
-      }
-      catch(err) { console.error(err) }
-      finally {
-        sess.close();
-      }
-    });
 }
 const getCountries = () => {
   return new Promise(async (resolve, reject) => {
