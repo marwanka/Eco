@@ -183,7 +183,7 @@ const getCities = (country) => {
   return new Promise(async (resolve, reject) => {
     const sess = ndb.session();
     try {
-      const result = await sess.run('MATCH (:Country { country: $country })<--(c:City)) RETURN c;', { country: country });
+      const result = await sess.run('MATCH (:Country { country: $country })<--(c:City) RETURN c;', { country: country });
       let res = [];
       console.log(result.records);
       for(var i = 0; i < result.records.length; i++) {
@@ -222,7 +222,7 @@ const addCountry = async (country) => {
   if(!country) return;
   const sess = ndb.session();
   try {
-    sess.run('MERGE (n:Country {country: $country}) RETURN n', { country: country });
+    await sess.run('MERGE (n:Country {country: $country}) RETURN n', { country: country });
   }
   catch(err) { console.error(err) }
   finally {
@@ -230,11 +230,11 @@ const addCountry = async (country) => {
   }
 }
 
-const addCity = (country, city) => {
+const addCity = async (country, city) => {
   if(!country || !city) return;
   const sess = ndb.session();
   try {
-    sess.run('MERGE (c:City {city: $city}), (ct:Country {country: $country})\n CREATE (c)-[n:REL]->(ct)\n RETURN n, c;', { country: country, city: city });
+    await sess.run('MERGE (c:City {city: $city})\n MERGE (ct:Country {country: $country})\n CREATE (c)-[n:REL]->(ct)\n RETURN n, c;', { country: country, city: city });
   }
   catch(err) { console.error(err) }
   finally {
