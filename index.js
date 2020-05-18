@@ -4,8 +4,8 @@ const sha512 = require('js-sha512');
 
 
 //Neo4j database
-const neo4j = require('neo4j');
-var ndb = new neo4j.GraphDatabase(config.neo4j.uri);
+const neo4j = require('neo4j-driver');
+var ndb = new neo4j.driver(config.neo4j.uri);
 
 //Influx database
 const Influx = require('influxdb-nodejs');
@@ -180,47 +180,63 @@ const http = require('http').createServer(app);
 const socketio = require('socket.io')(http);
 
 const getCities = (country) => {
-    return new Promise((resolve, reject) => {
-      ndb.cypher({
-        query: 'MATCH (c:City)-[n:REL]->(ct:Country {country: $country}); RETURN c;',
-        params: { country: country }
-      }, (err, results)=>{
-        if(err) {reject(err); return;}
-        resolve(results);
-      })
+    return new Promise(async (resolve, reject) => {
+      const sess = ndb.session();
+      try {
+        const recs = await sess.run('MATCH (c:City)-[n:REL]->(ct:Country {country: $country}); RETURN c;', { country: country }).records;
+        let res = [];
+        for(var i = 0; i < recs.length; i++) {
+          res.push(recs[i].get(0));
+        }
+        return res;
+      }
+      catch(err) { console.error(err) }
+      finally {
+        sess.close();
+      }
     });
 }
 const getCountries = () => {
-  return new Promise((resolve, reject) => {
-    ndb.cypher({
-      query: 'MATCH (n:Country); RETURN n',
-    }, (err, results)=>{
-      if(err) {reject(err); return;}
-      resolve(results);
-    })
+  return new Promise(async (resolve, reject) => {
+    const sess = ndb.session();
+    try {
+      const recs = await sess.run('MATCH (n:Country); RETURN n').records;
+      let res = [];
+      for(var i = 0; i < recs.length; i++) {
+        res.push(recs[i].get(0));
+      }
+      return res;
+    }
+    catch(err) { console.error(err) }
+    finally {
+      sess.close();
+    }
   });
 }
 
 const addCountry = (country) => {
   if(!country) return;
-  ndb.cypher({
-    query: 'MERGE (n:Country {country: $country}); RETURN n',
-    params: { country: country }
-  }, (err, results)=>{
-    if(err) {console.error(err); return;}
-    console.log(results);
-  })
+  const sess = ndb.session();
+  try {
+    sess.run('MERGE (n:Country {country: $country}); RETURN n', { country: country });
+  }
+  catch(err) { console.error(err) }
+  finally {
+    sess.close();
+  }
 }
 
 const addCity = (country, city) => {
   if(!country || !city) return;
-  ndb.cypher({
-    query: 'MERGE (c:City {city: $city}); MERGE (ct:Country {country: $country}); CREATE (c)-[n:REL]->(ct); RETURN n, c;',
-    params: { city: city, country: country }
-  }, (err, results)=>{
-    if(err) {console.error(err); return;}
-    console.log(results);
-  })
+  if(!country) return;
+  const sess = ndb.session();
+  try {
+    sess.run('MERGE (c:City {city: $city}); MERGE (ct:Country {country: $country}); CREATE (c)-[n:REL]->(ct); RETURN n, c;', { country: country, city: city });
+  }
+  catch(err) { console.error(err) }
+  finally {
+    sess.close();
+  }
 }
 
 socketio.on('connection', (socket) => {

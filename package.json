@@ -21,6 +21,7 @@
     "js-sha512": "^0.8.0",
     "mongoose": "^5.9.10",
     "neo4j": "^2.0.0-RC2",
+    "neo4j-driver": "^4.0.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "passport-local-register": "^1.0.4",
