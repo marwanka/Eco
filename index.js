@@ -183,7 +183,7 @@ const getCities = (country) => {
   return new Promise(async (resolve, reject) => {
     const sess = ndb.session();
     try {
-      const result = await sess.run('MATCH (c:City)-[n:REL]->(ct:Country {country: $country}) RETURN c;', { country: country });
+      const result = await sess.run('MATCH (c:City)-[n:REL]->(ct:Country { country: $country }) RETURN c;', { country: country });
       let res = [];
       console.log(result.records);
       for(var i = 0; i < result.records.length; i++) {
@@ -234,7 +234,7 @@ const addCity = (country, city) => {
   if(!country || !city) return;
   const sess = ndb.session();
   try {
-    sess.run('CREATE (c:City {city: $city})-[n:REL]->(ct:Country {country: $country}); RETURN n, c;', { country: country, city: city });
+    sess.run('MERGE (c:City {city: $city}), (ct:Country {country: $country})\n CREATE (c)-[n:REL]->(ct)\n RETURN n, c;', { country: country, city: city });
   }
   catch(err) { console.error(err) }
   finally {
