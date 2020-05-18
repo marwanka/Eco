@@ -183,7 +183,7 @@ const getCities = (country) => {
   return new Promise(async (resolve, reject) => {
     const sess = ndb.session();
     try {
-      const result = await sess.run('MATCH (:Country { country: $country })<--(c:City)) RETURN c;', { country: country });
+      const result = await sess.run('MATCH (:Country { country: $country })<--(c:City) RETURN c;', { country: country });
       let res = [];
       console.log(result.records);
       for(var i = 0; i < result.records.length; i++) {
