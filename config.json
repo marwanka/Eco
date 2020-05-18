@@ -9,7 +9,7 @@
     "uri": "http://localhost/eco"
   },
   "neo4j": {
-    "uri": "neo4j://localhost"
+    "uri": "bolt://localhost"
   },
   "weather": {
     "appID": "MsuMK7Z9Jq0usisGjSe4",
